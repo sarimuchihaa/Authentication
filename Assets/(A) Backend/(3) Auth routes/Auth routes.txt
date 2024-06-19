@@ -1,0 +1,27 @@
+(1)
+(Auth routes)
+(backend/backend/urls.py)
+from django.contrib import admin
+from django.urls import path, include
+from api.views import CreateUserView
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('api/user/register/', CreateUserView.as_view(), name="register"),
+    path('api/token/', TokenObtainPairView.as_view(), name="get_token"),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name="refresh"),
+    path('api-auth/', include('rest_framework.urls')),
+]
+
+python manage.py makemigrations
+python manage.py migrate
+python manage.py runserver
+
+http://127.0.0.1:8000/api/user/register/
+http://127.0.0.1:8000/api/token/
+http://127.0.0.1:8000/api/token/refresh/
+username:zaid
+password:ali
+refresh:eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTcxODcwODgyNCwiaWF0IjoxNzE4NjIyNDI0LCJqdGkiOiI3MjAwZjI0ODJhODI0MzU4OTI4YjA2MjAwYjM0ZjVjNyIsInVzZXJfaWQiOjJ9
+access:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE4NjI0ODQxLCJpYXQiOjE3MTg2MjMwMjIsImp0aSI6IjE4OTM5MzA1ODIyNjRkNDNiOTlkZjNjNjA0NzM5NTdmIiwidXNlcl9pZCI6Mn0.K7PoMVvVYkZTsMemp4VYly9GQxkGGzcbY_w9NIxjNUQ

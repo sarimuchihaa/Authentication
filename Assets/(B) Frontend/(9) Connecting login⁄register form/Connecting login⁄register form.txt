@@ -1,0 +1,27 @@
+(1)
+(Connecting login⁄register form)
+(Register.jsx)
+import Form from "../components/Form"
+
+function Register() {
+  return <Form route="/api/user/register/" method="register"/>
+}
+
+export default Register
+
+
+(Login.jsx)
+import Form from "../components/Form"
+
+function Login() {
+  return <Form route="/api/token/" method="login"/>
+}
+
+export default Login
+
+
+username: Ayanokoji
+password: Goat
+http://localhost:5173/register
+http://localhost:5173/login
+http://localhost:5173/

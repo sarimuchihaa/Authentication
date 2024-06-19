@@ -1,0 +1,98 @@
+(1)
+(Install)
+npm create vite@latest frontend -- --template react
+cd frontend
+npm install axios react-router-dom jwt-decode
+
+
+(frontend/env)
+VITE_API_URL="http://localhost:8000"
+
+
+(frontend/src/constants.js)
+export const ACCESS_TOKEN  = "access";
+export const REFRESH_TOKEN = "refresh";
+
+
+(frontend/src/api.js)
+import axios from "axios"
+import { ACCESS_TOKEN } from "./constants"
+
+const api = axios.create({
+    baseURL: import.meta.env.VITE_API_URL
+})
+
+api.interceptors.request.use(
+    (config) => {
+        const token = localStorage.getItem(ACCESS_TOKEN);
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config
+    },
+    (error) => {
+        return Promise.reject(error)
+    }
+)
+
+export default api
+
+
+(frontend/src/components/ProtectedRoute.jsx)
+import { Navigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
+import api from "../api";
+import { REFRESH_TOKEN, ACCESS_TOKEN } from "../constants";
+import { useState, useEffect } from "react";
+
+
+function ProtectedRoute({ children }) {
+    const [isAuthorized, setIsAuthorized] = useState(null);
+
+    useEffect(() => {
+        auth().catch(() => setIsAuthorized(false))
+    }, [])
+
+    const refreshToken = async () => {
+        const refreshToken = localStorage.getItem(REFRESH_TOKEN);
+        try {
+            const res = await api.post("/api/token/refresh/", {
+                refresh: refreshToken,
+            });
+            if (res.status === 200) {
+                localStorage.setItem(ACCESS_TOKEN, res.data.access)
+                setIsAuthorized(true)
+            } else {
+                setIsAuthorized(false)
+            }
+        } catch (error) {
+            console.log(error);
+            setIsAuthorized(false);
+        }
+    };
+
+    const auth = async () => {
+        const token = localStorage.getItem(ACCESS_TOKEN);
+        if (!token) {
+            setIsAuthorized(false);
+            return;
+        }
+        const decoded = jwtDecode(token);
+        const tokenExpiration = decoded.exp;
+        const now = Date.now() / 1000;
+
+        if (tokenExpiration < now) {
+            await refreshToken();
+        } else {
+            setIsAuthorized(true);
+        }
+    };
+
+    if (isAuthorized === null) {
+        return <div>Loading...</div>;
+    }
+
+    return isAuthorized ? children : <Navigate to="/login" />;
+}
+
+export default ProtectedRoute;
