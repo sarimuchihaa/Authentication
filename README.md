@@ -1,0 +1,1 @@
+🚀 I built an efficient Authentication System using a robust stack comprising Express.js, React.js, PostgreSQL, and Node.js. 🌟 Users can seamlessly register and log in with this system, ensuring secure access and smooth user experience.
